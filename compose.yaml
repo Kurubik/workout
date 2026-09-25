@@ -1,0 +1,51 @@
+# WORKOUT//INDEX — production compose for the shared Caddy edge.
+#
+# Builds this repository's image, joins the existing external edge network under a
+# project-unique alias, and publishes no host ports: the only way in is through the shared
+# proxy. The app is public and static, so it needs no secret of any kind.
+#
+#   docker compose up -d --build
+#
+# The container name and image are unique to this app; the network alias is the one the
+# ingress fragment proxies to.
+
+services:
+  app:
+    build:
+      context: .
+      args:
+        VERSION: ${WORKOUT_VERSION:-1.0.0}
+    image: workout-xtr:${WORKOUT_VERSION:-1.0.0}
+    container_name: workout-xtr-app
+    restart: unless-stopped
+
+    networks:
+      girl_edge:
+        aliases:
+          - workout-app
+
+    # No published ports — reachable only from the shared edge.
+    ports: []
+
+    # Static server hardening: immutable filesystem, no capabilities, no privilege gain.
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      - /var/cache/nginx:size=16m,mode=0755
+      - /var/run:size=4m,mode=0755
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+networks:
+  girl_edge:
+    external: true
+    name: girl-xtr_girl_edge

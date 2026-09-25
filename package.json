@@ -1,0 +1,27 @@
+{
+  "name": "workout-index",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "WORKOUT//INDEX — standalone public exercise catalogue",
+  "license": "AGPL-3.0-or-later",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && node scripts/build-sw.mjs",
+    "preview": "vite preview --port 4173 --strictPort",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "extract": "node scripts/extract-source-data.mjs"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.3",
+    "happy-dom": "^20.11.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}
